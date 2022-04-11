@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
 router.get("/", async (req, res) => {
     const places = await Place.find().populate("author");
     res.status(200).json(places);
-})
+});
 
 //View all places created by an author
 router.get("/myplaces", async (req, res) => {
@@ -30,12 +30,16 @@ router.get("/myplaces", async (req, res) => {
     const places = await Place.find({
         author: req.jwtPayload.user._id,
     }).populate("author");
-    res.status(200).json(places)
+    res.status(200).json(places);
 });
 
 
-
-//View one place depending on ID
+//View one place by the user id
+router.get("/:id", async (req, res) => {
+    const { id } = req.params;
+    const place = await Place.findById(id);
+    res.status(200).json(place);
+});
 
 //Delete depending on ID
 
