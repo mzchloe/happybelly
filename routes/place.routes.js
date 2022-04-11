@@ -6,10 +6,10 @@ const Place = require("../models/Place.model");
 
 //Create a new place post
 router.post('/', async (req, res) => {
-    const { name, adress, city, dietaryType, description } = req.body;
+    const { name, address, city, dietaryType, description } = req.body;
     const place = await Place.create({ 
         name, 
-        adress, 
+        address, 
         city, 
         dietaryType, 
         description, 
@@ -41,9 +41,34 @@ router.get("/:id", async (req, res) => {
     res.status(200).json(place);
 });
 
-//Delete depending on ID
+//Delete depending on the user id
+router.delete("/:id", async (req, res) => {
+    const { id } = req.params;
+    const place = await Place.findById(id);
+    if (place.user.toString() === req.jwtPayload.user._id){
+        await Place.findByIdAndDelete(id);
+        res.status(200).json(place);
+    } else {
+        res.status(400).json("Unauthorized");
+    }
+});
 
 //Edit depending on ID 
-
+router.put("/:id", async (req, res) => {
+    const { id } = req.params;
+    const { name, address, city, dietaryType, description } = req.body;
+    let place = await Place.findById(id);
+    if (place.user.toString() === req.jwtPayload.user._id) {
+        place.name = name;
+        place.address = address;
+        place.city = city;
+        place.dietaryType = dietaryType;
+        place.description = description;
+        place = await place.save();
+        res.status(200).json(tweet);
+    } else {
+        res.status(400).json("Unauthorized");
+    }
+});
 
 module.exports = router;
