@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
 
 //View all places 
 router.get("/", async (req, res) => {
-    const places = await Place.find().populate("author");
+    const places = await Place.find().populate("author").populate("comments");
     res.status(200).json(places);
 });
 
@@ -29,7 +29,7 @@ router.get("/myplaces", async (req, res) => {
     //find the places associated with the author
     const places = await Place.find({
         author: req.jwtPayload.user._id,
-    }).populate("author");
+    }).populate("author").populate("comments");
     res.status(200).json(places);
 });
 
