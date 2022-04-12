@@ -3,6 +3,8 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
 dotenv.config();
+
+//middleware to check for valid identity
 const {authenticate} = require("./middlewares/jwt.middleware");
 
 mongoose.connect(process.env.MONGO_DB_URL);
@@ -18,7 +20,7 @@ app.use(express.json());
 const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
-//place routes
+//place routes 
 const placeRoutes = require("./routes/place.routes");
 app.use("/place", authenticate, placeRoutes);
 
