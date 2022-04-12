@@ -1,12 +1,20 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const validate = require("../middlewares/validate.middleware");
+const { body } = require("express-validator");
 const User = require("../models/User.model");
 
 const router = express.Router();
 
 //Signup route
-router.post("/signup", async (req, res) => {
+router.post("/signup", validate([
+  body("firstName").isLength({ min: 2 }),
+  body("lastName").isLength({ min: 2 }),
+  body("email").isEmail(),
+  body("password").isLength({ min: 6 }),
+]),
+async (req, res) => {
   const { firstName, lastName, email, username, password } = req.body;
   try {
     const passwordHash = await bcrypt.hash(password, 10);
@@ -24,7 +32,12 @@ router.post("/signup", async (req, res) => {
 });
 
 //Login route
-router.post("/login", async (req, res) => {
+router.post("/login", 
+validate([
+  body("email").isEmail(),
+  body("password").isLength({ min: 6 }),
+]),
+async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
