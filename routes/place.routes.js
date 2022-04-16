@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const {authenticate} = require("./middlewares/jwt.middleware");
 
 //Require the Place model
 const Place = require("../models/Place.model");
 
 //Create a new place post
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
     const { name, address, city, dietaryType, description } = req.body;
     const place = await Place.create({ 
         name, 
@@ -25,7 +26,7 @@ router.get("/", async (req, res) => {
 });
 
 //View all places created by an author
-router.get("/myplaces", async (req, res) => {
+router.get("/myplaces", authenticate, async (req, res) => {
     //find the places associated with the author
     const places = await Place.find({
         author: req.jwtPayload.user._id,
@@ -35,14 +36,14 @@ router.get("/myplaces", async (req, res) => {
 
 
 //View one place by the place id
-router.get("/:id", async (req, res) => {
+router.get("/:id", authenticate, async (req, res) => {
     const { id } = req.params;
     const place = await Place.findById(id);
     res.status(200).json(place);
 });
 
 //Delete depending on the place id
-router.delete("/:id", async (req, res) => {  
+router.delete("/:id", authenticate, async (req, res) => {  
     //grab the id from the route
     const { id } = req.params;
     //we find the place we want to delete, we wait to check the author of the place
@@ -64,7 +65,7 @@ router.delete("/:id", async (req, res) => {
     
 
 //Edit depending on place id  
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticate, async (req, res) => {
     const { id } = req.params;
     const { name, address, city, dietaryType, description } = req.body;
     let place = await Place.findById(id);

@@ -22,7 +22,7 @@ app.use("/auth", authRoutes);
 
 //place routes 
 const placeRoutes = require("./routes/place.routes");
-app.use("/place", authenticate, placeRoutes);
+app.use("/place", placeRoutes);
 
 //comment routes
 const commentRoutes = require("./routes/comment.routes");
