@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {authenticate} = require("./middlewares/jwt.middleware");
+const {authenticate} = require("../middlewares/jwt.middleware");
 
 //Require the Place model
 const Place = require("../models/Place.model");
