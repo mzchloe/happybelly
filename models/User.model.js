@@ -24,6 +24,10 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    favorite:  {type: [mongoose.SchemaTypes.ObjectId],
+    ref: "Place",
+    default: [],
+}
 });
 
 const User = model('User', userSchema);
