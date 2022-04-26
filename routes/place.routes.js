@@ -21,7 +21,13 @@ router.post("/", authenticate, async (req, res) => {
 
 //View all places
 router.get("/", async (req, res) => {
-  const places = await Place.find().populate("author").populate("comments");
+  const places = await Place.find()
+  .populate("author")
+  .populate("comments")
+  .populate({
+    path: "comments",
+    populate: "author",
+  });
   res.status(200).json(places);
 });
 
@@ -33,7 +39,12 @@ router.get("/myplaces", authenticate, async (req, res) => {
       author: req.jwtPayload.user._id,
     })
       .populate("author")
-      .populate("comments");
+      .populate("comments")
+      .populate({
+        path: "comments",
+        populate: "author",
+      });
+      console.log(places)
     res.status(200).json(places);
   } catch (error) {
       res.status(403).json('Please login')
