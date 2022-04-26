@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { authenticate } = require("../middlewares/jwt.middleware");
 
 //Require the Comment model
 const Comment = require("../models/Comment.model");
@@ -19,6 +20,19 @@ router.post('/:id', async (req, res) => {
     place.comments.push(comment._id);
     place.save()
     res.status(200).json(comment);
+});
+
+//Delete comment by id 
+router.delete('/:id', authenticate, async (req, res) => {
+    const { id } = req.params;
+    //console.log(id)
+    let comment = await Comment.findById(id);
+    if (comment.author.toString() === req.jwtPayload.user._id) {
+        await Comment.findByIdAndDelete(id);
+        res.status(200).json(comment);
+      } else {
+        res.status(400).json("You are not the author of this comment");
+      }
 });
 
 module.exports = router;
