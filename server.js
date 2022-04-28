@@ -28,5 +28,9 @@ app.use("/place", placeRoutes);
 const commentRoutes = require("./routes/comment.routes");
 app.use("/comment", authenticate, commentRoutes);
 
+// user
+const userRoutes = require("./routes/user.routes");
+app.use("/user", authenticate, userRoutes);
+
 
 app.listen(process.env.PORT);
