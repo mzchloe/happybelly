@@ -6,23 +6,31 @@ const User = require("../models/User.model");
 
 //create a get route for favorites
 router.get("/", async (req, res) => {
-    const user = await User.findById(req.jwtPayload.user._id)
+  const user = await User.findById(req.jwtPayload.user._id)
     .populate("favorite")
     .populate({
       path: "favorite",
-      populate: "author", 
+      populate: ["author", "comments"],
     })
-    console.log(user)
-    res.status(200).json(user);
-  });
+    .populate({
+      path: "favorite",
+      populate: {
+      path: "comments",
+      populate: "author",
+      }
+    });
+  // console.log(user)
+  res.status(200).json(user);
+});
 
 //create a put route to add the saved favorites
 router.put("/favorites", async (req, res) => {
- //   console.log(req.body)
-    const user = await User.findById(req.body.userId)
-    !user.favorite.includes(req.body.placeId) && user.favorite.push(req.body.placeId);
-    user.save()
-    res.status(200).json(user);
+  //   console.log(req.body)
+  const user = await User.findById(req.body.userId);
+  !user.favorite.includes(req.body.placeId) &&
+    user.favorite.push(req.body.placeId);
+  user.save();
+  res.status(200).json(user);
 });
 
 //create a unsave from favorites
@@ -36,7 +44,6 @@ router.put("/favorites", async (req, res) => {
 
     }
 }) */
-
 
 /* const { id } = req.params;
 //console.log(id)
