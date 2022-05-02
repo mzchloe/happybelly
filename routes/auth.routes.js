@@ -78,10 +78,10 @@ router.post(
 router.get("/verify", authenticate, async (req, res) => {
 
   try {
-    const newUser = await User.findById(req.jwtPayload.user._id)
+   // const newUser = await User.findById(req.jwtPayload.user._id)
     res.status(200).json({
-      user: newUser,
-      //req.jwtPayload.user,
+    //  user: newUser,
+    user: req.jwtPayload.user,
     });
   } catch (error) {
     res.status(500).json(error);
