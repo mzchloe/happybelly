@@ -75,7 +75,7 @@ router.post(
 );
 
 //route to verify token
-router.get("/verify", authenticate, async (req, res) => {
+router.post("/verify", authenticate, async (req, res) => {
 
   try {
    // const newUser = await User.findById(req.jwtPayload.user._id)
