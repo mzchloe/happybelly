@@ -20,9 +20,10 @@ app.use(express.json());
 const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
-/* app.get('/', (req, res) => {
+//root route for testing
+app.get('/', (req, res) => {
     res.send('hello world')
-}) */
+})
 
 //place routes 
 const placeRoutes = require("./routes/place.routes");
