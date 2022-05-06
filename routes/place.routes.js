@@ -65,6 +65,8 @@ router.delete("/:id", authenticate, async (req, res) => {
   //we find the place we want to delete, we wait to check the author of the place
   let place = await Place.findById(id);
   //we check if it is the owner of this place created, if the place matches the user in the jwt
+  
+
   if (place.author.toString() === req.jwtPayload.user._id) {
     await Place.findByIdAndDelete(id);
     res.status(200).json(place);
