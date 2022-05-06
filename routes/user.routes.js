@@ -3,6 +3,7 @@ const router = express.Router();
 const { authenticate } = require("../middlewares/jwt.middleware");
 
 const User = require("../models/User.model");
+const Place = require("../models/Place.model");
 
 //create a get route for favorites
 router.get("/", async (req, res) => {
@@ -15,9 +16,9 @@ router.get("/", async (req, res) => {
     .populate({
       path: "favorite",
       populate: {
-      path: "comments",
-      populate: "author",
-      }
+        path: "comments",
+        populate: "author",
+      },
     });
   // console.log(user)
   res.status(200).json(user);
@@ -26,33 +27,58 @@ router.get("/", async (req, res) => {
 //create a put route to add the saved favorites
 router.put("/favorites", async (req, res) => {
   //   console.log(req.body)
-  const user = await User.findById(req.body.userId);
-  !user.favorite.includes(req.body.placeId) &&
-    user.favorite.push(req.body.placeId);
-  user.save();
+  //get the user where we wnt to make changes
+  const user = await User.findById(req.body.userId)
+    .populate("favorite")
+    .populate({
+      path: "favorite",
+      populate: ["author", "comments"],
+    })
+    .populate({
+      path: "favorite",
+      populate: {
+        path: "comments",
+        populate: "author",
+      },
+    });
+  //check if there is a place that is already been added to favorite
+  const isAlreadyFavorited = user.favorite.some((aPlace) => {
+    return aPlace._id === req.body.placeId;
+  });
+  //if the place is not already in the favorite, we find the id and push it to the favorite list
+  if (!isAlreadyFavorited) {
+    const place = await Place.findById(req.body.placeId).populate(
+      "author",
+      "-password"
+    );
+
+    console.log({ place, user });
+    user.favorite.push(place);
+    user.save();
+  }
   res.status(200).json(user);
 });
 
-//create a unsave from favorites
-/* router.put("/favorites/:id", async (req, res) => {
-    const { id } = req.body.placeId;
-    console.log(id)
-    let removeFavorite = await User.findById(id)
-    if () {
-        
-    } else {
-
-    }
-}) */
-
-/* const { id } = req.params;
-//console.log(id)
-let comment = await Comment.findById(id);
-if (comment.author.toString() === req.jwtPayload.user._id) {
-    await Comment.findByIdAndDelete(id);
-    res.status(200).json(comment);
-  } else {
-    res.status(400).json("You are not the author of this comment");
-  } */
+//delete the whole list
+router.delete("/favorites", authenticate, async (req, res) => {
+  console.log(req.jwtPayload.user._id)
+  const user = await User.findById(req.jwtPayload.user._id)
+    .populate("favorite")
+    .populate({
+      path: "favorite",
+      populate: ["author", "comments"],
+    })
+    .populate({
+      path: "favorite",
+      populate: {
+        path: "comments",
+        populate: "author",
+      },
+    });
+  user.favorite = [];
+  user.save();
+  // console.log(user)
+  res.status(200).json(user);
+});
 
 module.exports = router;
